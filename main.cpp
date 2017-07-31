@@ -21,7 +21,7 @@ int main(int argc, char*argv[])
         SDL_PollEvent(&ev);
         if(ev.key.keysym.sym==SDLK_ESCAPE)
             running=false;
-        display.render();
+        display.render(ev);
     }
 
     return 0;
