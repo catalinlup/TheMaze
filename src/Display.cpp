@@ -66,7 +66,6 @@ std::string Display::getTitle(){
 void Display::render(SDL_Event& ev){
     //Aici se pun imaginile pentru afisare
     SDL_RenderClear(_renderer);
-
     _curScreen->show(_renderer);
     _curScreen->renderGrid();
 
@@ -95,6 +94,7 @@ void Display::render(SDL_Event& ev){
 
     case SCREEN_STATE::GameScreen:
         _curScreen->runMap(ev);
+        //cout<<"Ceva";
 
         break;
     case SCREEN_STATE::MapMakerScreen:

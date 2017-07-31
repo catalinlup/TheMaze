@@ -7,6 +7,8 @@
 #include <vector>
 #include "Map.h"
 #include "Block.h"
+#include "Mobile.h"
+#include "Player.h"
 #include <fstream>
 #include "Animation.h"
 
@@ -43,13 +45,14 @@ class Game : public Screen
         int convert_back(char code);
         void LoadTypes();
 
-        Animation *test;
+       /* Animation *test;
         int tx=600;
         int ty=900;
         int tw=101;
         int th=77;
         int its=10;
-        bool show=true;
+        bool show=true;*/
+        Player*pl;
 
 };
 

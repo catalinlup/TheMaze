@@ -38,8 +38,13 @@ Game::Game(SDL_Renderer*ren,int ScreenWidth,int ScreenHeight)
     LoadTypes();
     LoadCurMap();
 
-    test=new Animation("res/animations/ManIdle/","man_idle_",0,0,101,77,_ren,61,0);
-    addAnimation(test,&tx,&ty,&_tileW,&_tileH,&its,&show);
+    /*test=new Animation("res/animations/ManIdle/","man_idle_",0,0,101,77,_ren,61,0);
+    addAnimation(test,&tx,&ty,&_tileW,&_tileH,&its,&show);*/
+    pl=new Player(_tileW,_tileH*2,_ren);
+    for(int i=0;i<pl->animations.size();i++){
+        addAnimation(pl->animations[i],&(pl->_x),&(pl->_y),&(pl->_w),&(pl->_h),pl->iterations[i],pl->shows[i]);
+    }
+
 
 
 }
@@ -107,7 +112,31 @@ void Game::LoadCurMap(){
 }
 
 void Game::runMap(SDL_Event&ev){
-    test->run(10);
+    //test->run(10);
+    pl->processControl(ev);
+    if(*camX<=Square[_map._Mapsize-1][_map._Mapsize-1].x-_screenHeight){
+        if(pl->_x-_screenWidth/2+_screenHeight/2>=_screenHeight-_tileW){
+            *camX+=pl->getSpeed();
+            //SDL_Delay(250);
+        }
+    }
+    if(*camX>0){
+        if(pl->_x-_screenWidth/2+_screenHeight/2<=_tileW){
+        *camX-=pl->getSpeed();
+        //SDL_Delay(250);
+        }
+
+    }
+    if(pl->_y>=_screenHeight-2*_tileH){
+        *camY+=pl->getSpeed();
+        //SDL_Delay(250);
+    }
+    if(*camY>0){
+        if(pl->_y<=2*_tileH){
+            *camY-=pl->getSpeed();
+           // SDL_Delay(250);
+        }
+    }
 
 
 }
