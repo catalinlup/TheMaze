@@ -15,9 +15,10 @@ Display::Display(std::string title)
             _width=_disp.w;
             _height=_disp.h;
             _title=title;
-            std::cout<<_width<<" "<<_height<<std::endl;
                 }
-
+            if(TTF_Init()==-1){
+                std::cerr<<"True Type Fonts failed to initialize "<<TTF_GetError()<<std::endl;
+            }
         int flags=IMG_INIT_JPG|IMG_INIT_PNG;
         int init=IMG_Init(flags);
         if((init%flags)!=flags&&false){
@@ -30,10 +31,23 @@ Display::Display(std::string title)
             }
             else{
                 //Alte initializari
+                _renderer=SDL_CreateRenderer(_window,-1,SDL_RENDERER_ACCELERATED);
+                if(_renderer==nullptr){
+                    std::cerr<<"Renderer was not created "<<SDL_GetError()<<std::endl;
+                }
             }
     }
 
 }
+
+    _menu=new Menu(_renderer,_width,_height);
+
+    _mapMaker=new MapMaker(_renderer,_width,_height);
+    _gameSelection=new GameSelection(_renderer,_width,_height);
+    _game=new Game(_renderer,_width,_height);
+    _curScreen=_menu;
+    _screenState=SCREEN_STATE::MenuScreen;
+
 }
 
 
@@ -49,8 +63,70 @@ std::string Display::getTitle(){
     return _title;
 }
 
-void Display::render(){
+void Display::render(SDL_Event& ev){
     //Aici se pun imaginile pentru afisare
+    SDL_RenderClear(_renderer);
+
+    _curScreen->show(_renderer);
+    _curScreen->renderGrid();
+
+    SDL_RenderPresent(_renderer);
+
+    switch(_screenState){
+
+    case SCREEN_STATE::MenuScreen:
+        if(_curScreen->gamePressed(ev)){
+            _curScreen=_gameSelection;
+            _screenState=SCREEN_STATE::GameSelectionScreen;
+            SDL_Delay(250);
+        }
+        else if(_curScreen->mapcrPressed(ev)){
+            delete _mapMaker;
+            _mapMaker=nullptr;
+            _mapMaker=new MapMaker(_renderer,_width,_height);
+            _curScreen=_mapMaker;
+            _screenState=SCREEN_STATE::MapMakerScreen;
+            _curScreen->createMap();
+            SDL_Delay(250);
+
+        }
+
+        break;
+
+    case SCREEN_STATE::GameScreen:
+        _curScreen->runMap(ev);
+
+        break;
+    case SCREEN_STATE::MapMakerScreen:
+            _curScreen->runMap(ev);
+            if(ev.type==SDL_KEYDOWN){
+                if(ev.key.keysym.sym==SDLK_s){
+                    _curScreen->save("Map.tmmap");
+                    SDL_Delay(250);
+                }
+                if(ev.key.keysym.sym==SDLK_BACKSPACE){
+                    _curScreen->DeleteAll();
+                    _curScreen=_menu;
+                    _screenState=SCREEN_STATE::MenuScreen;
+                }
+            }
+        break;
+    case SCREEN_STATE::GameSelectionScreen:
+        _curScreen->runMap(ev);
+        if(ev.type==SDL_KEYDOWN){
+            if(ev.key.keysym.sym==SDLK_BACKSPACE){
+                    _curScreen=_menu;
+                    _screenState=SCREEN_STATE::MenuScreen;
+                }
+        }
+        if(_curScreen->gamePressed(ev)){
+            _curScreen=_game;
+            _screenState=SCREEN_STATE::GameScreen;
+            SDL_Delay(250);
+        }
+        break;
+
+    }
 
 }
 

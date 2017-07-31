@@ -4,6 +4,24 @@
 #include<iostream>
 #include<SDL.h>
 #include<SDL_image.h>
+#include <SDL_ttf.h>
+#include "Texture.h"
+#include "Screen.h"
+#include "Menu.h"
+#include "Game.h"
+#include "MapMaker.h"
+#include "GameSelection.h"
+
+
+
+
+enum SCREEN_STATE{
+    MenuScreen,
+    GameScreen,
+    MapMakerScreen,
+    GameSelectionScreen
+
+};
 
 class Display
 {
@@ -14,7 +32,7 @@ class Display
             SDL_Quit();
             IMG_Quit();
         }
-        void render();//Afisare imagini
+        void render(SDL_Event &ev);//Afisare imagini
         int getWidth();//Getter
         int getHeight();//'-'
         std::string getTitle();//'-'
@@ -26,6 +44,14 @@ class Display
         SDL_Window*_window=nullptr;
         SDL_Renderer*_renderer=nullptr;
         SDL_DisplayMode _disp;
+        Screen*_curScreen;
+        SCREEN_STATE _screenState;
+        Texture test;
+        //Screen tst;
+        Menu* _menu;
+        Game* _game;
+        MapMaker* _mapMaker;
+        GameSelection*_gameSelection;
 };
 
 #endif // DISPLAY_H
